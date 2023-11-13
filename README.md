@@ -1,2 +1,2 @@
 # sif-models
-Models for references of sea ice concentration forecasting.
+Repository for models of sea ice concentration forecasting.
