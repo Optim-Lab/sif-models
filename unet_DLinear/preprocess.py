@@ -10,7 +10,7 @@ from torch.utils.data import Dataset, DataLoader
 def load_data(default_path = '../'):
     
     data = pd.read_csv(default_path+'data_v2/weekly_train.csv')
-    train_data_path = 'data_v2/weekly_train/'+data.tail(100*12)['week_file_nm'].values
+    train_data_path = default_path+'data_v2/weekly_train/'+data.tail(100*12)['week_file_nm'].values
 
     data_list = []
     for p in tqdm(train_data_path):

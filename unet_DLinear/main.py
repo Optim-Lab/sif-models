@@ -109,3 +109,6 @@ def main():
         'ms_ssim_score': ms_ssim_score,
         'lpips_score': lpips_score
         })
+
+if __name__ == "__main__":
+    main()
