@@ -214,7 +214,7 @@ pyrightconfig.json
 *.pdf
 
 # data_folder
-data_v2/
+#data_v2/
 
 # ds_store
 .DS_Store
