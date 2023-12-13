@@ -60,7 +60,7 @@ class BottleNeck(nn.Module):
         return x
 #%%
 class ExpandingPath(nn.Module):
-    def __init__(self, output_window):
+    def __init__(self, input_window):
         super(ExpandingPath,self).__init__()
         self.convb1 = Convblock(256,128)
         self.convb2 = Convblock(128,64)
@@ -71,7 +71,7 @@ class ExpandingPath(nn.Module):
         self.upconv1 = nn.ConvTranspose2d(256,128,4,stride=2,padding=1)
         self.upconv2 = nn.ConvTranspose2d(128,64,4,stride=2,padding=1)
         self.upconv3 = nn.ConvTranspose2d(64,32,4,stride=2,padding=1)
-        self.upconv4 = nn.ConvTranspose2d(32,output_window,3,stride=1,padding=1)
+        self.upconv4 = nn.ConvTranspose2d(32,input_window,3,stride=1,padding=1)
         #self.sigmoid = nn.Sigmoid()
         
 
@@ -99,7 +99,7 @@ class Unet(nn.Module):
         super(Unet,self).__init__()
         self.contract = ContractingPath(input_window)
         self.bottleneck = BottleNeck()
-        self.expand = ExpandingPath(output_window)
+        self.expand = ExpandingPath(input_window)
 
     def forward(self,x):
         x1, x2, x3, p3 = self.contract(x)
