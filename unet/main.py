@@ -97,7 +97,7 @@ def main():
     model.load_state_dict(torch.load('best_unet_long.pth'))
     pred, target, loss = eval(model, te_loader, criterion, device)
     
-    l1_1000, l2_1000, ssim_score, ms_ssim_score, lpips_score = get_score(pred, target, output_window, device)
+    l1_1000, l2_1000, ssim_score, ms_ssim_score, lpips_score, iiee_score = get_score(pred, target, output_window, device)
 
     if key is not None:
         wandb.log({
@@ -106,7 +106,8 @@ def main():
         '1000l2': l2_1000,
         'ssim_score': ssim_score,
         'ms_ssim_score': ms_ssim_score,
-        'lpips_score': lpips_score
+        'lpips_score': lpips_score,
+        'iiee_score': iiee_score
         })
 
 if __name__ == "__main__":
