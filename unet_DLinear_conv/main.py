@@ -32,7 +32,7 @@ def main():
     if key is not None:
         
         wandb.login(key=key)
-        wandb.init(project='Unet_DLinear', name=name)
+        wandb.init(project='Unet_DLinear_conv', name=name)
 
 
     seed_everything(seed)
@@ -82,7 +82,7 @@ def main():
                 print(f'epoch:{epoch}, valid_loss:{valid_loss.item():5f}')
             if valid_loss < best_valid_loss:
                 best_valid_loss = valid_loss
-                torch.save(model.state_dict(), 'best_unet_Dlinear.pth')
+                torch.save(model.state_dict(), 'best_unet_Dlinear_conv.pth')
                 early_stopping_count = 0
             else:
                 early_stopping_count += 1
@@ -95,7 +95,7 @@ def main():
                 break
 
     model = UnetDLinear(input_window, output_window, de).to(device)
-    model.load_state_dict(torch.load('best_unet_Dlinear.pth'))
+    model.load_state_dict(torch.load('best_unet_Dlinear_conv.pth'))
     pred, target, loss = eval(model, te_loader, criterion, device)
     
     l1_1000, l2_1000, ssim_score, ms_ssim_score, lpips_score = get_score(pred, target, output_window, device)

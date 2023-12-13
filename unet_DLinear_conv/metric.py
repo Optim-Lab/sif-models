@@ -18,8 +18,8 @@ def get_score(pred, target, output_window, device):
     ms_ssim = MS_SSIM(channels=3)
 
     for k in range(pred.shape[0]):
-        save_image(target[k], './unet_dlinear_plot/target/target_{}.png'.format(k))
-        save_image(pred[k], './unet_dlinear_plot/pred/pred_{}.png'.format(k))
+        save_image(target[k], './unet_dlinear_conv_plot/target/target_{}.png'.format(k))
+        save_image(pred[k], './unet_dlinear_conv_plot/pred/pred_{}.png'.format(k))
 
     ssim_score = 0
     ms_ssim_score = 0
@@ -27,8 +27,8 @@ def get_score(pred, target, output_window, device):
 
     for k in range(output_window):
         
-        pred_path  = './unet_dlinear_plot/pred/pred_{}.png'.format(k)
-        target_path = './unet_dlinear_plot/target/target_{}.png'.format(k)
+        pred_path  = './unet_dlinear_conv_plot/pred/pred_{}.png'.format(k)
+        target_path = './unet_dlinear_conv_plot/target/target_{}.png'.format(k)
 
         pred = utils.prepare_image(Image.open(pred_path).convert("RGB")).to(device)
         target = utils.prepare_image(Image.open(target_path).convert("RGB")).to(device)
