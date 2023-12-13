@@ -107,7 +107,9 @@ def main():
         'ssim_score': ssim_score,
         'ms_ssim_score': ms_ssim_score,
         'lpips_score': lpips_score,
-        'iiee_score': iiee_score
+        'iiee_score': iiee_score,
+        'seed': seed,
+        'learning_rate': learning_rate
         })
 
 if __name__ == "__main__":
