@@ -63,6 +63,7 @@ def get_score(pred, target, output_window, device):
         ssim_score += ssim(pred, target, as_loss=False).item()
         ms_ssim_score += ms_ssim(pred, target, as_loss=False).item()
         lpips_score += loss_fn_alex(pred, target).item()
+        iiee_score += calculate_IIEE(target, pred).item()
 
 
     l2 = F.mse_loss(pred,target)
