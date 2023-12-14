@@ -64,6 +64,7 @@ def main():
             plt.imshow(target[-1])
             plt.savefig('target.png')
             if key is not None:
+                l1_1000, l2_1000, ssim_score, ms_ssim_score, lpips_score, iiee_score = get_score(pred, target, output_window, device)
                 wandb.log({
                     "Predict Image": [
                         wandb.Image('pred.png')
@@ -73,7 +74,13 @@ def main():
                     ],
                     'epoch' : epoch,
                     'train_loss': train_loss,
-                    'valid_loss' : valid_loss
+                    'valid_loss' : valid_loss,
+                    '1000l1': l1_1000,
+                    '1000l2': l2_1000,
+                    'ssim_score': ssim_score,
+                    'ms_ssim_score': ms_ssim_score,
+                    'lpips_score': lpips_score,
+                    'iiee_score': iiee_score
                 })
             
             if epoch % 10 == 0:
@@ -100,16 +107,19 @@ def main():
     l1_1000, l2_1000, ssim_score, ms_ssim_score, lpips_score, iiee_score = get_score(pred, target, output_window, device)
 
     if key is not None:
+        table = wandb.Table(columns=["seed","learning_rate","best_model_loss","1000l1", "1000l2", "ssim_score","ms_ssim_score","lpips_score","iiee_score"])
+        table.add_data(seed,learning_rate,loss,l1_1000, l2_1000, ssim_score,ms_ssim_score,lpips_score,iiee_score)
         wandb.log({
-        'best_model_loss': loss,
-        '1000l1': l1_1000,
-        '1000l2': l2_1000,
-        'ssim_score': ssim_score,
-        'ms_ssim_score': ms_ssim_score,
-        'lpips_score': lpips_score,
-        'iiee_score': iiee_score,
-        'seed': seed,
-        'learning_rate': learning_rate
+        # 'best_model_loss': loss,
+        # '1000l1': l1_1000,
+        # '1000l2': l2_1000,
+        # 'ssim_score': ssim_score,
+        # 'ms_ssim_score': ms_ssim_score,
+        # 'ms_ssim_score': lpips_score,
+        # 'iiee_score': iiee_score,
+        # 'seed': seed,
+        # 'learning_rate': learning_rate,
+        "metrics_table": table
         })
 
 if __name__ == "__main__":
