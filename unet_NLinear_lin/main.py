@@ -101,7 +101,7 @@ def main():
                 print(f'best valid loss :{best_valid_loss}')
                 break
 
-    model = UnetNLinear(input_window, output_window, de).to(device)
+    model = UnetNLinear(input_window, output_window).to(device)
     model.load_state_dict(torch.load('best_unet_Nlinear_lin.pth'))
     pred, target, loss = eval(model, te_loader, criterion, device)
     
