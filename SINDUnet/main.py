@@ -10,13 +10,6 @@ import matplotlib.pyplot as plt
 import wandb
 
 def main():
-    if torch.cuda.is_available():
-        device = torch.device("cuda:0")
-    elif torch.backends.mps.is_available():
-        device = torch.device("mps")
-    else:
-        device = torch.device("cpu")
-
     args = argparse_custom()
     seed = args.s
     epochs = args.e
@@ -29,13 +22,22 @@ def main():
     key = args.key
     name = args.name    
 
+    seed_everything(seed)
+
+    if torch.cuda.is_available():
+        device = torch.device("cuda:0")
+    elif torch.backends.mps.is_available():
+        device = torch.device("mps")
+    else:
+        device = torch.device("cpu")
+
     if key is not None:
         
         wandb.login(key=key)
         wandb.init(project='SINDUnet', name=name)
 
 
-    seed_everything(seed)
+    
 
     data = load_data()
 
@@ -65,7 +67,7 @@ def main():
             plt.imshow(target[-1])
             plt.savefig('target.png')
             if key is not None:
-                l1_1000, l2_1000, ssim_score, ms_ssim_score, lpips_score, iiee_score = get_score(pred, target, output_window, device)
+                # l1_1000, l2_1000, ssim_score, ms_ssim_score, lpips_score, iiee_score = get_score(pred, target, output_window, device)
                 wandb.log({
                     "Predict Image": [
                         wandb.Image('pred.png')
@@ -76,13 +78,17 @@ def main():
                     'epoch' : epoch,
                     'train_loss': train_loss,
                     'valid_loss' : valid_loss,
-                    '1000l1': l1_1000,
-                    '1000l2': l2_1000,
-                    'ssim_score': ssim_score,
-                    'ms_ssim_score': ms_ssim_score,
-                    'lpips_score': lpips_score,
-                    'iiee_score': iiee_score
+                    "mae_score" : get_mae_score(target,pred), 
+                    "f1_score" : get_f1_score(target,pred),
+                    "mae_over_f1" : get_mae_over_f1(target,pred)
+                    # '1000l1': l1_1000,
+                    # '1000l2': l2_1000,
+                    # 'ssim_score': ssim_score,
+                    # 'ms_ssim_score': ms_ssim_score,
+                    # 'lpips_score': lpips_score,
+                    # 'iiee_score': iiee_score
                 })
+            
             
             if epoch % 10 == 0:
                 print(f'epoch:{epoch}, train_loss:{train_loss.item():5f}')
@@ -105,11 +111,14 @@ def main():
     model.load_state_dict(torch.load('best_SINDUnet.pth'))
     pred, target, loss = eval(model, te_loader, criterion, device)
     
-    l1_1000, l2_1000, ssim_score, ms_ssim_score, lpips_score, iiee_score = get_score(pred, target, output_window, device)
+    mae_score = get_mae_score(target, pred)
+    f1_score = get_f1_score(target, pred)
+    mae_over_f1  = get_mae_over_f1(target, pred)
+    #l1_1000, l2_1000, ssim_score, ms_ssim_score, lpips_score, iiee_score = get_score(pred, target, output_window, device)
 
     if key is not None:
-        table = wandb.Table(columns=["seed","learning_rate","best_model_loss","1000l1", "1000l2", "ssim_score","ms_ssim_score","lpips_score","iiee_score"])
-        table.add_data(seed,learning_rate,loss,l1_1000, l2_1000, ssim_score,ms_ssim_score,lpips_score,iiee_score)
+        table = wandb.Table(columns=["seed","learning_rate","best_model_loss","mae_score", "f1_score","mae_over_f1"])
+        table.add_data(seed,learning_rate,loss,mae_score,f1_score,mae_over_f1)
         wandb.log({
         # 'best_model_loss': loss,
         # '1000l1': l1_1000,
@@ -122,6 +131,5 @@ def main():
         # 'learning_rate': learning_rate,
         "metrics_table": table
         })
-
 if __name__ == "__main__":
     main()

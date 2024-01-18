@@ -21,10 +21,11 @@ def argparse_custom():
     parser.add_argument("-e", type=int, default=[200], nargs=1, help="epoch")
     parser.add_argument("-b", type=int, default=[8], nargs=1, help="batch_size")
     parser.add_argument("-lr", type=float, default=[1e-3], nargs=1, help="learning_rate")
-    parser.add_argument("-es", type=int, default=[30], nargs=1, help="early_stopping")
+    parser.add_argument("-es", type=int, default=[50], nargs=1, help="early_stopping")
     parser.add_argument("-iw", type=int, default=[12], nargs=1, help="input_window")
     parser.add_argument("-ow", type=int, default=[4], nargs=1, help="output_window")
     parser.add_argument("-de", type=int, default=[3], nargs=1, help="decomp")
+    parser.add_argument("-pe", type=int, default=[4], nargs=1, help="period")
     parser.add_argument("-key", type=str, default=[None], nargs=1, help="wandb login key")
     parser.add_argument("-name", type=str, default=['default'], nargs=1, help="wandb project run name")
     
@@ -38,6 +39,7 @@ def argparse_custom():
     args.iw = args.iw[0]
     args.ow = args.ow[0]
     args.de = args.de[0]
+    args.pe = args.pe[0]
     args.key = args.key[0]
     args.name = args.name[0]
 

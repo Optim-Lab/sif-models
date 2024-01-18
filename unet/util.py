@@ -21,7 +21,7 @@ def argparse_custom():
     parser.add_argument("-e", type=int, default=[200], nargs=1, help="epoch")
     parser.add_argument("-b", type=int, default=[8], nargs=1, help="batch_size")
     parser.add_argument("-lr", type=float, default=[1e-3], nargs=1, help="learning_rate")
-    parser.add_argument("-es", type=int, default=[30], nargs=1, help="early_stopping")
+    parser.add_argument("-es", type=int, default=[50], nargs=1, help="early_stopping")
     parser.add_argument("-iw", type=int, default=[12], nargs=1, help="input_window")
     parser.add_argument("-ow", type=int, default=[4], nargs=1, help="output_window")
     parser.add_argument("-key", type=str, default=[None], nargs=1, help="wandb login key")

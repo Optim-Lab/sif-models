@@ -94,9 +94,9 @@ class ExpandingPath(nn.Module):
 
         return out
 #%%
-class Unet(nn.Module):
-    def __init__(self, input_window, output_window):
-        super(Unet,self).__init__()
+class UnetFirst(nn.Module):
+    def __init__(self, input_window):
+        super(UnetFirst,self).__init__()
         self.contract = ContractingPath(input_window)
         self.bottleneck = BottleNeck()
         self.expand = ExpandingPath(input_window)
@@ -107,14 +107,28 @@ class Unet(nn.Module):
         out = self.expand(x1,x2,x3,p4)
 
         return out
-    
+#%%
+class UnetSecond(nn.Module):
+    def __init__(self, input_window, output_window):
+        super(UnetSecond,self).__init__()
+        self.contract = ContractingPath(input_window)
+        self.bottleneck = BottleNeck()
+        self.expand = ExpandingPath(output_window)
+
+    def forward(self,x):
+        x1, x2, x3, p3 = self.contract(x)
+        p4 = self.bottleneck(p3)
+        out = self.expand(x1,x2,x3,p4)
+
+        return out
 #%%
 class UnetNLinear(nn.Module):
     def __init__(self, input_window, output_window):
         super(UnetNLinear,self).__init__()
-        self.unet = Unet(input_window, output_window)
+        self.unetF = UnetFirst(input_window)
+        self.unetS = UnetSecond(input_window,output_window)
         self.sigmoid = nn.Sigmoid()
-        self.upconv = nn.ConvTranspose2d(input_window,output_window,3,stride=1,padding=1)
+        #self.upconv = nn.ConvTranspose2d(input_window,output_window,3,stride=1,padding=1)
         #self.conv = nn.Conv2d(in_channels=input_window, out_channels=output_window, kernel_size=1, stride=1, padding=0)
         #self.lin = nn.Linear(input_window,output_window)
         
@@ -122,13 +136,14 @@ class UnetNLinear(nn.Module):
         seq_last = x[:,-1:,:,:].detach()
         x = x - seq_last
 
-        x = self.unet(x)
+        x = self.unetF(x)
 
         x = x + seq_last
 
         #x = self.lin(x.permute(0,2,3,1)).permute(0,3,1,2)
-        x = self.upconv(x)
+        #x = self.upconv(x)
         #x = self.conv(x)
+        x = self.unetS(x)
         x = self.sigmoid(x)
         
         return x

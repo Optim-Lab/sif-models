@@ -6,6 +6,7 @@ from torchvision.utils import save_image
 import torch
 from PIL import Image
 import torch.nn.functional as F
+import numpy as np
 #%%
 def calculate_IIEE(y_true, y_pred_proba, threshold=0, grid_cell_area=None):
     """
@@ -32,6 +33,36 @@ def calculate_IIEE(y_true, y_pred_proba, threshold=0, grid_cell_area=None):
         IIEE = torch.sum(binary_error)
 
     return IIEE
+
+#%%
+#%%
+def get_mae_score(true, pred):
+    score = np.mean(np.abs(true-pred))
+    
+    return score
+
+def get_f1_score(true, pred):
+    target = np.where((true>0.05)&(true<0.5))
+    
+    true = true[target]
+    pred = pred[target]
+    true = np.where(true < 0.15, 0, 1)
+    pred = np.where(pred < 0.15, 0, 1)
+    
+    right = np.sum(true * pred == 1)
+    precision = right / np.sum(true+1e-8)
+    recall = right / np.sum(pred+1e-8)
+    score = 2 * precision*recall/(precision+recall+1e-8)
+    
+    return score
+    
+def get_mae_over_f1(true, pred):
+    mae = get_mae_score(true, pred)
+    f1 = get_f1_score(true, pred)
+    score = mae/(f1+1e-8)
+    
+    return score
+
 #%%
 
 def get_score(pred, target, output_window, device):
@@ -43,18 +74,19 @@ def get_score(pred, target, output_window, device):
     ms_ssim = MS_SSIM(channels=3)
 
     for k in range(pred.shape[0]):
-        save_image(target[k], './unet_nlinear_upconv_plot/target/target_{}.png'.format(k))
-        save_image(pred[k], './unet_nlinear_upconv_plot/pred/pred_{}.png'.format(k))
+        save_image(target[k], './unet_nlinear_conv_plot/target/target_{}.png'.format(k))
+        save_image(pred[k], './unet_nlinear_conv_plot/pred/pred_{}.png'.format(k))
 
     ssim_score = 0
     ms_ssim_score = 0
     lpips_score = 0    
     iiee_score = 0 
+    
 
     for k in range(output_window):
         
-        pred_path  = './unet_nlinear_upconv_plot/pred/pred_{}.png'.format(k)
-        target_path = './unet_nlinear_upconv_plot/target/target_{}.png'.format(k)
+        pred_path  = './unet_nlinear_conv_plot/pred/pred_{}.png'.format(k)
+        target_path = './unet_nlinear_conv_plot/target/target_{}.png'.format(k)
 
         pred = utils.prepare_image(Image.open(pred_path).convert("RGB")).to(device)
         target = utils.prepare_image(Image.open(target_path).convert("RGB")).to(device)

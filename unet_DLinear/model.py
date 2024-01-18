@@ -142,18 +142,19 @@ class UnetDLinear(nn.Module):
     def __init__(self, input_window, output_window, de):
         super(UnetDLinear,self).__init__()
         self.decomp = series_decomp(de)
-        self.unet = Unet(input_window, output_window)
+        self.unetT = Unet(input_window, output_window)
+        self.unetR = Unet(input_window, output_window)
         self.sigmoid = nn.Sigmoid()
         #self.upconv = nn.ConvTranspose2d(12,4,3,stride=1,padding=1)
-        self.conv = nn.Conv2d(in_channels=12, out_channels=4, kernel_size=1, stride=1, padding=0)
+        #self.conv = nn.Conv2d(in_channels=12, out_channels=4, kernel_size=1, stride=1, padding=0)
         #self.lin = nn.Linear(12,4)
         
     def forward(self, x):
         res, moving_mean = self.decomp(x)
         #res = self.upconv(res)
-        res = self.conv(res)
+        res = self.unetR(res)
         #res = self.lin(res.permute(0,2,3,1)).permute(0,3,1,2)
-        moving_mean = self.unet(moving_mean)
+        moving_mean = self.unetT(moving_mean)
         x = res + moving_mean
         x = self.sigmoid(x)
         

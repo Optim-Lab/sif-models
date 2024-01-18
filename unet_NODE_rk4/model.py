@@ -1,6 +1,7 @@
 #%%
 import torch
 import torch.nn as nn
+from torchdiffeq import odeint
 #%%
 class Convblock(nn.Module):
     def __init__(self,in_channel,out_channel):
@@ -127,34 +128,85 @@ class moving_avg(nn.Module):
         return x
     
 #%%
-class series_decomp(nn.Module):
-    def __init__(self, kernel_size):
-        super(series_decomp, self).__init__()
-        self.moving_avg = moving_avg(kernel_size, stride=1)
+class Seasonality(nn.Module):
+    def __init__(self, period):
+        super(Seasonality,self).__init__()
+        self.period = period
+        
+    def forward(self, x):
+        B, C, H, W = x.shape
+        S = torch.zeros_like(x)
 
-    def forward(self, x):
-        moving_mean = self.moving_avg(x)
-        res = x - moving_mean
-        return res, moving_mean
-    
+        for i in range(self.period):
+            indices = torch.arange(i, C, self.period)
+            seasonal_avg = torch.mean(x[:, indices, :, :], dim=1, keepdim=True)
+            S[:, indices, :, :] = seasonal_avg.repeat(1, len(indices), 1, 1)
+        
+        return S
 #%%
-class UnetDLinear(nn.Module):
-    def __init__(self, input_window, output_window, de):
-        super(UnetDLinear,self).__init__()
-        self.decomp = series_decomp(de)
-        self.unet = Unet(input_window, output_window)
-        self.sigmoid = nn.Sigmoid()
-        #self.upconv = nn.ConvTranspose2d(12,4,3,stride=1,padding=1)
-        #self.conv = nn.Conv2d(in_channels=12, out_channels=4, kernel_size=1, stride=1, padding=0)
-        self.lin = nn.Linear(12,4)
+class DCMP_block(nn.Module):
+    def __init__(self, kernel_size, pe):
+        super(DCMP_block, self).__init__()
+        self.moving_avg = moving_avg(kernel_size, stride=1)
+        self.season = Seasonality(period = pe)
         
     def forward(self, x):
-        res, moving_mean = self.decomp(x)
-        #res = self.upconv(res)
-        #res = self.conv(res)
-        res = self.lin(res.permute(0,2,3,1)).permute(0,3,1,2)
-        moving_mean = self.unet(moving_mean)
-        x = res + moving_mean
-        x = self.sigmoid(x)
+        T = self.moving_avg(x)
+        x = x - T
         
+        S = self.season(x)
+        R = x - S
+        
+        return T, S, R  
+#%%
+class ODEBlock(nn.Module):
+    def __init__(self, ode_func):
+        super(ODEBlock, self).__init__()
+        self.ode_func = ode_func
+
+    def forward(self, x, t):
+        return odeint(self.ode_func, x, t, method='rk4')
+#%%
+class LinODEFunc(nn.Module):
+    def __init__(self, input_window):
+        super(LinODEFunc, self).__init__()
+        self.lin = nn.Linear(input_window,input_window)
+
+    def forward(self, t, x):
+        x = x.permute(0,2,3,1)
+        x = self.lin(x)
+        x = x.permute(0,3,1,2)
         return x
+#%%
+class UnetNODE(nn.Module):
+    def __init__(self,input_window, output_window,de,pe):
+        super(UnetNODE, self).__init__()
+        self.DCMP = DCMP_block(de, pe) # moving average
+        self.ode_trend = ODEBlock(LinODEFunc(input_window))  # U-Net for trend
+        self.ode_seasonal = ODEBlock(LinODEFunc(input_window))  # Convolution for seasonal
+        self.ode_residual = ODEBlock(LinODEFunc(input_window))  # Convolution for residual
+        #self.conv_trend = nn.Conv2d(in_channels=12, out_channels=4, kernel_size=1, stride=1, padding=0)
+        #self.conv_seasonal = nn.Conv2d(in_channels=12, out_channels=4, kernel_size=1, stride=1, padding=0)
+        #self.conv_residual = nn.Conv2d(in_channels=12, out_channels=4, kernel_size=1, stride=1, padding=0)
+        self.unet_trend = Unet(input_window, output_window)
+        self.unet_seasonal = Unet(input_window, output_window)
+        self.unet_residual = Unet(input_window, output_window)
+        self.sigmoid = nn.Sigmoid()
+        self.t = torch.linspace(0,1,7)
+        
+    def forward(self, x):
+        t = self.t
+        
+        T, S, R = self.DCMP(x)
+        T = self.ode_trend(T, t)[-1]
+        S = self.ode_seasonal(S, t)[-1]
+        R = self.ode_residual(R, t)[-1]
+        
+        T = self.unet_trend(T)
+        S = self.unet_seasonal(S)
+        R = self.unet_residual(R)
+        
+        x = T + S + R
+        x = self.sigmoid(x)
+        return x
+
