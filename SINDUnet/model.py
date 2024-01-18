@@ -165,7 +165,7 @@ class SINDUnet(nn.Module):
         #res = self.lin(res.permute(0,2,3,1)).permute(0,3,1,2)
         res = res + seq_last_r
         
-        res = res * torch.where(moving_mean > torch.min(moving_mean), 1.0, 0.0)
+        #res = res * torch.where(moving_mean > torch.min(moving_mean), 1.0, 0.0)
         
         x = res + moving_mean
         x = self.sigmoid(x)
