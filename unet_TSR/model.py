@@ -162,9 +162,10 @@ class UnetTSR(nn.Module):
     def __init__(self,input_window, output_window, de, pe):
         super(UnetTSR,self).__init__()
         self.DCMP = DCMP_block(de, pe) # moving average
-        self.unet_T = Unet(input_window, output_window)
-        self.unet_S = Unet(input_window, output_window)
-        self.unet_R = Unet(input_window, output_window) # real Unet
+        #self.unet_T = Unet(input_window, output_window)
+        #self.unet_S = Unet(input_window, output_window)
+        #self.unet_R = Unet(input_window, output_window) # real Unet
+        self.unet = Unet(input_window, output_window)
         self.sigmoid = nn.Sigmoid()
         
         #self.upconv = nn.ConvTranspose2d(12,4,3,stride=1,padding=1)
@@ -177,12 +178,13 @@ class UnetTSR(nn.Module):
         T, S, R = self.DCMP(x)
         
         #res = self.upconv(res)
-        S = self.unet_S(S)
-        R = self.unet_R(R)
-        #res = self.lin(res.permute(0,2,3,1)).permute(0,3,1,2)
-        T = self.unet_T(T)
+        # S = self.unet_S(S)
+        # R = self.unet_R(R)
+        # #res = self.lin(res.permute(0,2,3,1)).permute(0,3,1,2)
+        # T = self.unet_T(T)
 
         x = T+S+R
+        x = self.unet(x)
         x = self.sigmoid(x)
         
         return x
