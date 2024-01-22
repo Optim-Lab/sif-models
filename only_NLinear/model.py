@@ -12,7 +12,9 @@ class NLinear(nn.Module):
         seq_last = x[:,-1:,:,:].detach()
         x = x - seq_last
 
+        x = x.permute(0,2,3,1)
         x = self.linear(x)
+        x = x.permute(0,3,1,2)
 
         x = x + seq_last
 
