@@ -188,9 +188,12 @@ class UnetNODE(nn.Module):
         #self.conv_trend = nn.Conv2d(in_channels=12, out_channels=4, kernel_size=1, stride=1, padding=0)
         #self.conv_seasonal = nn.Conv2d(in_channels=12, out_channels=4, kernel_size=1, stride=1, padding=0)
         #self.conv_residual = nn.Conv2d(in_channels=12, out_channels=4, kernel_size=1, stride=1, padding=0)
-        self.unet_trend = Unet(input_window, output_window)
-        self.unet_seasonal = Unet(input_window, output_window)
-        self.unet_residual = Unet(input_window, output_window)
+
+        # self.unet_trend = Unet(input_window, output_window)
+        # self.unet_seasonal = Unet(input_window, output_window)
+        # self.unet_residual = Unet(input_window, output_window)
+        
+        self.unet = Unet(input_window,output_window)
         self.sigmoid = nn.Sigmoid()
         self.t = torch.linspace(0,1,7)
         
@@ -202,11 +205,11 @@ class UnetNODE(nn.Module):
         S = self.ode_seasonal(S, t)[-1]
         R = self.ode_residual(R, t)[-1]
         
-        T = self.unet_trend(T)
-        S = self.unet_seasonal(S)
-        R = self.unet_residual(R)
+        # T = self.unet_trend(T)
+        # S = self.unet_seasonal(S)
+        # R = self.unet_residual(R)
         
         x = T + S + R
+        x = self.unet(x)
         x = self.sigmoid(x)
         return x
-
