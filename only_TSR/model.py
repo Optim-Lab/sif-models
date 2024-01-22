@@ -50,9 +50,9 @@ class DCMP_block(nn.Module):
         
         return T, S, R
 #%%
-class NODE(nn.Module):
+class TSR(nn.Module):
     def __init__(self, input_window, output_window, de, pe):
-        super(NODE, self).__init__()
+        super(TSR, self).__init__()
         self.DCMP = DCMP_block(de,pe)
         self.lin_T = nn.Linear(input_window,output_window)
         self.lin_S = nn.Linear(input_window,output_window)

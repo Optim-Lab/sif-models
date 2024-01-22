@@ -35,7 +35,7 @@ def main():
     if key is not None:
         
         wandb.login(key=key)
-        wandb.init(project='onlyNODE', name=name)
+        wandb.init(project='onlyTSR', name=name)
 
 
     
@@ -50,7 +50,7 @@ def main():
 
     tr_loader,va_loader,te_loader = loader(tr_dataset,va_dataset,te_dataset,batch_size)
 
-    model = NODE(input_window, output_window, de).to(device)
+    model = TSR(input_window, output_window, de).to(device)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     criterion = nn.BCELoss().to(device)
     best_valid_loss = float('inf')   
@@ -96,7 +96,7 @@ def main():
                 print(f'epoch:{epoch}, valid_loss:{valid_loss.item():5f}')
             if valid_loss < best_valid_loss:
                 best_valid_loss = valid_loss
-                torch.save(model.state_dict(), 'best_NODE.pth')
+                torch.save(model.state_dict(), 'best_TSR.pth')
                 early_stopping_count = 0
             else:
                 early_stopping_count += 1
@@ -108,8 +108,8 @@ def main():
                 print(f'best valid loss :{best_valid_loss}')
                 break
 
-    model = NODE(input_window, output_window, de, pe).to(device)
-    model.load_state_dict(torch.load('best_NODE.pth'))
+    model = TSR(input_window, output_window, de, pe).to(device)
+    model.load_state_dict(torch.load('best_TSR.pth'))
     pred, target, loss = eval(model, te_loader, criterion, device)
     
     mae_score = get_mae_score(target, pred)

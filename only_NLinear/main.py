@@ -50,7 +50,7 @@ def main():
 
     tr_loader,va_loader,te_loader = loader(tr_dataset,va_dataset,te_dataset,batch_size)
 
-    model = NLinear(input_window, output_window, de).to(device)
+    model = NLinear(input_window, output_window).to(device)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     criterion = nn.BCELoss().to(device)
     best_valid_loss = float('inf')   
