@@ -9,7 +9,7 @@ ODE** and benchmark models with pytorch.
 </p>
 
 
-Unicorn is an innovative sea ice forecasting model that effectively captures the spatiotemporal dynamics of sea ice by integrating ConvNODE and time series decomposition within the U-Net framework, significantly enhancing predictions of sea ice concentration and extent over existing models.
+**Unicorn** is an innovative sea ice forecasting model that effectively captures the spatiotemporal dynamics of sea ice by integrating ConvNODE and time series decomposition within the U-Net framework, significantly enhancing predictions of sea ice concentration and extent over existing models.
 
 
 <img src="https://github.com/Optim-Lab/sif-models/assets/98927724/59a4d96c-3d7b-40b7-bac1-aa612b16810f"/>
