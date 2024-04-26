@@ -1,9 +1,9 @@
 # Readme
-===
+---
 This repository is the official implementation of **Unicorn: U-Net for Sea Ice Forecasting with Convolutional Neural
 ODE** and benchmark models with pytorch.
 
-<img width="500" alt="test_1" src="https://github.com/Optim-Lab/sif-models/image/unicorn.jpeg](https://github.com/Optim-Lab/sif-models/blob/main/image/unicorn.jpeg?raw=true">
+<img width="500" alt="test_1" src="![unicorn](https://github.com/Optim-Lab/sif-models/assets/98927724/7ee94980-5432-4d63-9bea-d934f7f87089)">
 
 ## Usage
 ---
