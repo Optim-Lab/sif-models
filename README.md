@@ -1,5 +1,5 @@
 # Readme
-___
+
 This repository is the official implementation of **Unicorn: U-Net for Sea Ice Forecasting with Convolutional Neural
 ODE** and benchmark models with pytorch.
 
@@ -15,9 +15,22 @@ Unicorn is an innovative sea ice forecasting model that effectively captures the
 <img src="https://github.com/Optim-Lab/sif-models/assets/98927724/59a4d96c-3d7b-40b7-bac1-aa612b16810f"/>
 
 
+## Dataset
+### Download
+Download data from one of the following links and unpack it into `data_V2`.
+- SIC data 
+    * [SIC data](https://dacon.io/competitions/official/235731/data)
+- Ancillary data 
+    * [TB data](https://nsidc.org/data/nsidc-0001/versions/6)
+    * [AGE data](https://nsidc.org/data/nsidc-0611/versions/4)
+
+### Preprocess
+Ancillary data needs to be preprocessed.
 
 ## Usage
-___
+The model can be trained using the codes below, and the results can be viewed with the options `-key "wandb key" -name "project name"`.
+
+
 ### 1. proposed model
 ```
 python unicorn_cv/main.py
