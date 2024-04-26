@@ -5,7 +5,7 @@ ODE** and benchmark models with pytorch.
 
 
 <p align="center">
-<img src="https://github.com/Optim-Lab/sif-models/assets/98927724/b3f93ae8-61f0-4dcf-8f87-37d1f1208a52" align="center" width="50%"/>
+<img src="https://github.com/Optim-Lab/sif-models/assets/98927724/b3f93ae8-61f0-4dcf-8f87-37d1f1208a52" align="center" width="40%"/>
 </p>
 
 
