@@ -18,8 +18,7 @@ Unicorn is an innovative sea ice forecasting model that effectively captures the
 ## Dataset
 ### Download
 Download data from one of the following links and unpack it into `data_V2`.
-- SIC data 
-    * [SIC data](https://dacon.io/competitions/official/235731/data)
+- [SIC data](https://dacon.io/competitions/official/235731/data)
 - Ancillary data 
     * [TB data](https://nsidc.org/data/nsidc-0001/versions/6)
     * [AGE data](https://nsidc.org/data/nsidc-0611/versions/4)
@@ -29,7 +28,6 @@ Ancillary data needs to be preprocessed.
 
 ## Usage
 The model can be trained using the codes below, and the results can be viewed with the options `-key "wandb key" -name "project name"`.
-
 
 ### 1. proposed model
 ```
