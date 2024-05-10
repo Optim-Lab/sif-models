@@ -26,6 +26,16 @@ Download data from one of the following links and unpack it into `data_V2`.
 ### Preprocess
 Ancillary data needs to be preprocessed.
 
+TB 
+1. Out of the rioxarray file load 37V frequency data scaling pixel values multiplied with the scale factor of 0.1.
+2. Where there is missing pixels interpolate pixels using nearest neighbor. 
+3. Average the daily dataset of TB to match the weekly temporal resolution of our main SIC dataset.  
+
+SIA 
+1. Mask out land, and group sea ice pixels to two groups where sea ice aged 2 years or more is catergorized as multi-year ice and the rest first year ice.
+2. Use reprojection to change spatial coordinates and resolution size to match our main SIC dataset.   
+
+
 ## Usage
 The model can be trained using the codes below, and the results can be viewed with the options `-key "wandb key" -name "project name"`.
 
