@@ -18,7 +18,7 @@ ODE** and benchmark models with pytorch.
 ## Dataset
 ### Download
 Download data from one of the following links and unpack it into `data_V2`.
-- [SIC data](https://dacon.io/competitions/official/235731/data)
+- [SIC data](https://dacon.io/competitions/official/235731/data) (permission required)
 - Ancillary data 
     * [TB data](https://nsidc.org/data/nsidc-0001/versions/6)
     * [AGE data](https://nsidc.org/data/nsidc-0611/versions/4)
